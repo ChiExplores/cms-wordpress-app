@@ -7,9 +7,14 @@ if (!process.env.WORDPRESS_API_URL) {
 
 /** @type {import('next').NextConfig} */
 module.exports = {
+  reactStrictMode: false,
+  experimental: {
+    forceSwcTransforms: true,
+  },
   images: {
     domains: [
       process.env.WORDPRESS_API_URL.match(/(?!(w+)\.)\w*(?:\w+\.)+\w+/)[0], // Valid WP Image domain.
+      process.env.WP_IMAGES_URL,
       '0.gravatar.com',
       '1.gravatar.com',
       '2.gravatar.com',

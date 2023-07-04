@@ -2,6 +2,8 @@ const API_URL = process.env.WORDPRESS_API_URL
 
 async function fetchAPI(query = '', { variables }: Record<string, any> = {}) {
   const headers = { 'Content-Type': 'application/json' }
+  console.log("VARIABLES", variables)
+  console.log("QUERY", query);
 
   if (process.env.WORDPRESS_AUTH_REFRESH_TOKEN) {
     headers[
@@ -21,7 +23,7 @@ async function fetchAPI(query = '', { variables }: Record<string, any> = {}) {
 
   const json = await res.json()
   if (json.errors) {
-    console.error(json.errors)
+    console.error('error: ', json.errors)
     throw new Error('Failed to fetch API')
   }
   return json.data
@@ -97,8 +99,32 @@ export async function getAllPostsForHome(preview) {
       },
     }
   )
-
+  console.log(data?.posts)
   return data?.posts
+}
+
+export async function getDefaultPage(uri) {
+  const data = await fetchAPI(
+    `
+      query DefaultPage($uri: String!) {
+        nodeByUri(uri: $uri ) {
+          ... on Page {
+            id
+            title
+            blocks 
+          }
+        }
+      }
+    `,
+    {
+      variables: {
+        uri,
+      }
+    },
+  )
+  return {
+    data
+  }
 }
 
 export async function getPostAndMorePosts(slug, preview, previewData) {
@@ -155,9 +181,9 @@ export async function getPostAndMorePosts(slug, preview, previewData) {
         ...PostFields
         content
         ${
-          // Only some of the fields of a revision are considered as there are some inconsistencies
-          isRevision
-            ? `
+    // Only some of the fields of a revision are considered as there are some inconsistencies
+    isRevision
+      ? `
         revisions(first: 1, where: { orderby: { field: MODIFIED, order: DESC } }) {
           edges {
             node {
@@ -173,8 +199,8 @@ export async function getPostAndMorePosts(slug, preview, previewData) {
           }
         }
         `
-            : ''
-        }
+      : ''
+    }
       }
       posts(first: 3, where: { orderby: { field: DATE, order: DESC } }) {
         edges {
@@ -209,4 +235,18 @@ export async function getPostAndMorePosts(slug, preview, previewData) {
   if (data.posts.edges.length > 2) data.posts.edges.pop()
 
   return data
+}
+
+// query all pages (from udemy tutorial )
+export async function getAllPages() {
+  const data = await fetchAPI(`
+  query AllPagesQuery {
+    pages {
+      nodes {
+        uri
+      }
+    }
+  }`);
+
+  return data;
 }
