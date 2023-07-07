@@ -5,19 +5,15 @@ import { cleanAndTransformBlocks } from "../utils/cleanAndTransformBlocks";
 export default function Page(props) {
     console.log('PAGE PROPS', props)
     return (
-        <div>
-
-            page
-        </div>
+        <BlockRenderer blocks={props.blocks} />
     )
 };
 
 export const getStaticProps = async (context) => {
     console.log('CONTEXT', context);
-
     const uri = `/${context.params.slug.join("/")}/`;
     console.log("URI", uri);
-    const defaultPage = await getDefaultPage(uri)
+    const defaultPage = await getDefaultPage(uri);
     const blocks = cleanAndTransformBlocks(defaultPage.data.nodeByUri.blocks)
 
     return {
