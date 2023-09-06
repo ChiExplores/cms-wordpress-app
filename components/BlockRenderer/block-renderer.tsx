@@ -4,7 +4,6 @@ import { Paragraph } from "../Paragraph";
 import { theme } from "../../theme";
 
 export const BlockRenderer = ({ blocks }) => {
-    console.log('block rednder')
     return blocks.map(block => {
         switch (block.name) {
             case 'core/heading': {

@@ -1,5 +1,5 @@
 import { BlockRenderer } from "../components/BlockRenderer";
-import { getAllPages, getDefaultPage } from "../lib/api"
+import { getAllPages, getPage } from "../lib/api"
 import { cleanAndTransformBlocks } from "../utils/cleanAndTransformBlocks";
 
 export default function Page(props) {
@@ -13,12 +13,12 @@ export const getStaticProps = async (context) => {
     console.log('CONTEXT', context);
     const uri = `/${context.params.slug.join("/")}/`;
     console.log("URI", uri);
-    const defaultPage = await getDefaultPage(uri);
-    const blocks = cleanAndTransformBlocks(defaultPage.data.nodeByUri.blocks)
+    const page = await getPage(uri);
+    const blocks = cleanAndTransformBlocks(page.data.nodeByUri.blocks)
 
     return {
         props: {
-            title: defaultPage.data.nodeByUri.title,
+            title: page.data.nodeByUri.title,
             blocks
         },
         // revalidate: 10,
@@ -27,7 +27,7 @@ export const getStaticProps = async (context) => {
 
 export const getStaticPaths = async () => {
     const data = await getAllPages();
-    // console.log('static path data', data.pages.nodes.filter(page => page.uri !== "/"))
+    console.log('static path data', data.pages.nodes.filter(page => page.uri !== "/"))
 
     return {
         paths: data.pages.nodes.filter(page => page.uri !== "/").map(page => ({

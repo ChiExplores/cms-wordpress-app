@@ -103,15 +103,45 @@ export async function getAllPostsForHome(preview) {
   return data?.posts
 }
 
-export async function getDefaultPage(uri) {
+export async function getPage(uri) {
   const data = await fetchAPI(
     `
-      query DefaultPage($uri: String!) {
+      query pageQuery($uri: String!) {
         nodeByUri(uri: $uri ) {
           ... on Page {
             id
             title
             blocks 
+          }
+        }
+        acfOptionsMainMenu {
+          mainMenu {
+            callToActionButton { 
+              label
+              destination {
+                ... on Page {
+                  uri
+                }
+              }
+            }
+            menuItems {
+              menuItem {
+                destination {
+                  ... on Page {
+                    uri
+                  }
+                }
+                label
+              }
+              items {
+                destination {
+                  ... on Page {
+                    uri
+                  }
+                }
+                label
+              }
+            }
           }
         }
       }
@@ -126,6 +156,7 @@ export async function getDefaultPage(uri) {
     data
   }
 }
+
 
 export async function getPostAndMorePosts(slug, preview, previewData) {
   const postPreview = preview && previewData?.post
